@@ -1,2 +1,2 @@
-/privacy/  /privacy  301
-/terms/    /terms    301
+# Pages already resolves /privacy to /privacy/index.html; a rule here caused a
+# redirect loop (301 to /privacy/, then back). Nothing to rewrite for now.
