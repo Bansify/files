@@ -32,8 +32,15 @@ android {
       keyAlias = System.getenv("KEY_ALIAS") ?: "upload"
       keyPassword = System.getenv("KEY_PASSWORD")
     }
+    // CI has no committed debug.keystore, so fall back to the SDK's standard debug key
+    // (~/.android/debug.keystore), which the Android plugin creates on demand.
     create("debugConfig") {
-      storeFile = file("${rootDir}/debug.keystore")
+      val localDebug = file("${rootDir}/debug.keystore")
+      storeFile = if (localDebug.exists()) {
+        localDebug
+      } else {
+        file("${System.getProperty("user.home")}/.android/debug.keystore")
+      }
       storePassword = "android"
       keyAlias = "androiddebugkey"
       keyPassword = "android"

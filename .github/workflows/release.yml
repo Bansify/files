@@ -83,18 +83,28 @@ jobs:
           echo "Releasing $NAME ($CODE)"
 
       # ── Signing material ───────────────────────────────────────────────────
-      - name: Decode keystore
+      - name: Check signing secrets
+        id: guard
         env:
           KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
         run: |
           if [ -z "${KEYSTORE_BASE64:-}" ]; then
-            echo "::error::RELEASE_KEYSTORE_BASE64 is not set"
-            exit 1
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::RELEASE_KEYSTORE_BASE64 is not set — skipping the signed release. Add the four signing secrets to publish builds."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Decode keystore
+        if: steps.guard.outputs.ready == 'true'
+        env:
+          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+        run: |
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
-      - name: Print signing identity
+      - if: steps.guard.outputs.ready == 'true'
+        name: Print signing identity
         env:
           STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -105,7 +115,8 @@ jobs:
           keytool -list -keystore "$KEYSTORE_PATH" -storepass "$STORE_PASSWORD" | tail -3
 
       # ── Build ──────────────────────────────────────────────────────────────
-      - name: Build release APK and AAB
+      - if: steps.guard.outputs.ready == 'true'
+        name: Build release APK and AAB
         env:
           STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -116,7 +127,8 @@ jobs:
             -PversionCode=${{ steps.versioning.outputs.code }} \
             --no-daemon --stacktrace
 
-      - name: Collect artefacts
+      - if: steps.guard.outputs.ready == 'true'
+        name: Collect artefacts
         run: |
           set -euo pipefail
           NAME="${{ steps.versioning.outputs.name }}"
@@ -127,14 +139,16 @@ jobs:
           [ -n "$AAB" ] && cp "$AAB" "release_out/BansifyFiles-v${NAME}-PlayStore.aab"
           cd release_out && sha256sum BansifyFiles-* > SHA256SUMS.txt && cat SHA256SUMS.txt
 
-      - name: Upload artefacts to the workflow
+      - if: steps.guard.outputs.ready == 'true'
+        name: Upload artefacts to the workflow
         uses: actions/upload-artifact@v4
         with:
           name: bansify-files-release
           path: release_out/*
           if-no-files-found: error
 
-      - name: Publish GitHub Release
+      - if: steps.guard.outputs.ready == 'true'
+        name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.versioning.outputs.name }}
