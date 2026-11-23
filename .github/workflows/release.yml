@@ -104,15 +104,33 @@ jobs:
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
 
       - if: steps.guard.outputs.ready == 'true'
-        name: Print signing identity
+        name: Resolve signing alias
         env:
           STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_ALIAS_SECRET: ${{ secrets.KEY_ALIAS }}
         run: |
+          set -euo pipefail
           echo "### Bansify Files v${{ steps.versioning.outputs.name }} signing" >> "$GITHUB_STEP_SUMMARY"
-          echo "- alias: ${KEY_ALIAS:-upload}" >> "$GITHUB_STEP_SUMMARY"
-          keytool -list -keystore "$KEYSTORE_PATH" -storepass "$STORE_PASSWORD" | tail -3
+
+          ALIASES=$(keytool -list -keystore "$KEYSTORE_PATH" -storepass "$STORE_PASSWORD" \
+            | awk -F, '/PrivateKeyEntry/ {print $1}' | sed 's/PrivateKeyEntry//' | xargs -n1 | sort -u)
+
+          CHOSEN=""
+          if [ -n "${KEY_ALIAS_SECRET:-}" ] && echo "$ALIASES" | grep -qx "$KEY_ALIAS_SECRET"; then
+            CHOSEN="$KEY_ALIAS_SECRET"
+          elif [ -n "${KEY_ALIAS_SECRET:-}" ]; then
+            echo "::warning::KEY_ALIAS '${KEY_ALIAS_SECRET}' is not in the keystore; using the first private key instead"
+          fi
+          [ -z "$CHOSEN" ] && CHOSEN=$(echo "$ALIASES" | head -1)
+
+          if [ -z "$CHOSEN" ]; then
+            echo "::error::the keystore contains no private key entry"
+            keytool -list -keystore "$KEYSTORE_PATH" -storepass "$STORE_PASSWORD" | tail -10
+            exit 1
+          fi
+
+          echo "- alias: $CHOSEN" >> "$GITHUB_STEP_SUMMARY"
+          echo "KEY_ALIAS=$CHOSEN" >> "$GITHUB_ENV"
 
       # ── Build ──────────────────────────────────────────────────────────────
       - if: steps.guard.outputs.ready == 'true'
@@ -120,7 +138,6 @@ jobs:
         env:
           STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         run: |
           ./gradlew :app:assembleRelease :app:bundleRelease \
             -PversionName=${{ steps.versioning.outputs.name }} \
