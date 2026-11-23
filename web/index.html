@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bansify Files — the file manager for Android</title>
+  <meta name="description" content="Browse, clean and organise storage on Android. Bansify Files shows what is taking space, finds duplicates and frees it in a couple of taps." />
+  <link rel="canonical" href="https://files.bansify.com/" />
+  <link rel="icon" href="/assets/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0494f4" />
+  <meta property="og:title" content="Bansify Files — the file manager for Android" />
+  <meta property="og:description" content="Browse, clean and organise storage on Android." />
+  <meta property="og:image" content="https://files.bansify.com/assets/icon-512.png" />
+  <meta property="og:url" content="https://files.bansify.com/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="/css/site.css" />
+</head>
+<body>
+  <header class="site">
+    <div class="wrap">
+      <a class="brand" href="/"><img src="/assets/icon-192.png" alt="" /> Bansify Files</a>
+      <nav class="top">
+        <a href="#features">Features</a>
+        <a class="hide-sm" href="https://bansify.com">Bansify</a>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a class="btn" href="https://store.bansify.com/api/dl/files">Download</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow">Android · Free</span>
+          <h1>Know what is eating your storage — and take it back.</h1>
+          <p class="lede">Bansify Files is a file manager that actually helps: a clear view of every folder, the junk that piles up, and the tools you need to clean it without fear.</p>
+          <div class="cta">
+            <a class="btn" href="https://store.bansify.com/api/dl/files">Download APK</a>
+            <a class="btn ghost" href="https://github.com/Bansify/files/releases/latest">Release notes</a>
+          </div>
+          <p class="meta">Android 7.0+ · SHA-256 verified builds · No account needed</p>
+        </div>
+        <img class="app-icon" src="/assets/icon-512.png" alt="Bansify Files icon" width="512" height="512" />
+      </div>
+    </section>
+
+    <section class="wrap cards" id="features">
+      <div class="card">
+        <p class="num">01</p>
+        <h3>Browse</h3>
+        <p>Storage overview, folders, recent files and a full directory browser — with the size of everything in front of you.</p>
+      </div>
+      <div class="card">
+        <p class="num">02</p>
+        <h3>Clean</h3>
+        <p>Large files, duplicates and junk in one list. You always see exactly what will be removed before anything is deleted.</p>
+      </div>
+      <div class="card">
+        <p class="num">03</p>
+        <h3>Tools</h3>
+        <p>The everyday utilities that belong next to a file manager, plus quick collections for images, video, audio and documents.</p>
+      </div>
+    </section>
+
+    <section class="block wrap">
+      <h2>What it does well</h2>
+      <ul class="list">
+        <li>One activity, predictable back behaviour, no hidden background service</li>
+        <li>Previews for images, text and media without leaving the app</li>
+        <li>Nothing is deleted without an explicit confirmation</li>
+        <li>No analytics SDK, no account, no cloud upload</li>
+        <li>Signed release builds with published checksums</li>
+      </ul>
+    </section>
+
+    <section class="block wrap">
+      <h2>Install</h2>
+      <p class="lede">Download the signed APK, or build it yourself from source.</p>
+      <div class="cta">
+        <a class="btn" href="https://store.bansify.com/api/dl/files">Download the latest APK</a>
+        <a class="btn ghost" href="https://github.com/Bansify/files">Source on GitHub</a>
+      </div>
+      <p class="meta">Every release publishes <code>SHA256SUMS.txt</code>. Verify the file before installing.</p>
+    </section>
+  </main>
+
+  <footer class="site">
+    <div class="wrap">
+      <span>© 2026 Bansify · Made in India</span>
+      <nav>
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="https://bansify.com">bansify.com</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      try {
+        var saved = localStorage.getItem('bansify-theme');
+        var dark = saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (e) {}
+    })();
+  </script>
+</body>
+</html>
