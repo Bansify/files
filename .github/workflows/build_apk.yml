@@ -1,8 +1,8 @@
 name: Android CI
 
 on:
+  # every push, any branch
   push:
-    branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:

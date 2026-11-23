@@ -1,7 +1,9 @@
 name: Build Signed Release APK & Publish GitHub Release
 
 on:
+  # Every push to main builds and publishes a release, like the Browser repo.
   push:
+    branches: [main]
     tags:
       - 'v*'
   workflow_dispatch:
@@ -62,11 +64,16 @@ jobs:
             NAME=""
           fi
           if [ -z "$NAME" ]; then
-            LAST=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0.0")
-            MAJOR=$(echo "${LAST#v}" | cut -d. -f1)
-            MINOR=$(echo "${LAST#v}" | cut -d. -f2)
-            PATCH=$(echo "${LAST#v}" | cut -d. -f3)
-            NAME="${MAJOR}.${MINOR}.$((PATCH + 1))"
+            # Patch bump from the newest tag; the first release starts at 1.0.0
+            LAST=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LAST" ]; then
+              NAME="1.0.0"
+            else
+              MAJOR=$(echo "${LAST#v}" | cut -d. -f1)
+              MINOR=$(echo "${LAST#v}" | cut -d. -f2)
+              PATCH=$(echo "${LAST#v}" | cut -d. -f3)
+              NAME="${MAJOR}.${MINOR}.$((PATCH + 1))"
+            fi
           fi
           if [ -z "$CODE" ]; then
             CODE=$(git rev-list --count HEAD)
