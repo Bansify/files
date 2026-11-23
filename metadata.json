@@ -1,0 +1,6 @@
+{
+  "name": "Bansify Files",
+  "description": "A clean, fast, full-featured Android file manager inspired by Google Files with storage cleanup, categories, archive management, safe folder, trash, and built-in file previews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
