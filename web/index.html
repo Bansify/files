@@ -16,8 +16,16 @@
   <meta property="og:url" content="https://files.bansify.com/" />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="stylesheet" href="/css/site.css" />
+  <link rel="stylesheet" href="/css/shell.css" />
 </head>
 <body>
+  <div id="bs-splash" aria-live="polite">
+    <span class="bs-splash-tile"><img src="/assets/icon-192.png" alt="" /></span>
+    <p class="bs-splash-name"><b>Bansify</b> <span>Files</span></p>
+    <span class="bs-splash-line"><span></span></span>
+    <p class="bs-splash-status">Checking your Bansify account…</p>
+  </div>
+
   <header class="site">
     <div class="wrap">
       <a class="brand" href="/"><img src="/assets/icon-192.png" alt="" /> Bansify Files</a>
@@ -108,5 +116,6 @@
       } catch (e) {}
     })();
   </script>
+  <script src="/js/shell.js" defer></script>
 </body>
 </html>
