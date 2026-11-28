@@ -86,7 +86,7 @@ jobs:
       - name: Check signing secrets
         id: guard
         env:
-          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           if [ -z "${KEYSTORE_BASE64:-}" ]; then
             echo "ready=false" >> "$GITHUB_OUTPUT"
@@ -98,7 +98,7 @@ jobs:
       - name: Decode keystore
         if: steps.guard.outputs.ready == 'true'
         env:
-          KEYSTORE_BASE64: ${{ secrets.RELEASE_KEYSTORE_BASE64 }}
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
         run: |
           echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
           echo "KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
@@ -106,8 +106,8 @@ jobs:
       - if: steps.guard.outputs.ready == 'true'
         name: Resolve signing alias
         env:
-          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS_SECRET: ${{ secrets.KEY_ALIAS }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS_SECRET: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
           set -euo pipefail
           echo "### Bansify Files v${{ steps.versioning.outputs.name }} signing" >> "$GITHUB_STEP_SUMMARY"
@@ -136,8 +136,8 @@ jobs:
       - if: steps.guard.outputs.ready == 'true'
         name: Build release APK and AAB
         env:
-          STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
         run: |
           ./gradlew :app:assembleRelease :app:bundleRelease \
             -PversionName=${{ steps.versioning.outputs.name }} \
